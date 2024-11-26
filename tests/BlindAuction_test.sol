@@ -120,7 +120,7 @@ contract testSuite {
         blindAuction.withdraw();
     }
     function checkAuctionEnd() public  {
-        Assert. equal(blindAuction.ended(),"Auction not Ended");
+        Assert.equal(blindAuction.ended(),true, "Auction not Ended");
         blindAuction.auctionEnd();
     }
 
