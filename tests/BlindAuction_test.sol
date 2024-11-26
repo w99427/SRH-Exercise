@@ -14,16 +14,17 @@ import "../BlindAuction.sol";
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts
 contract testSuite {
     BlindAuction blindAuction;
-    address payable beneficiary;
+    address beneficiary;
     address acc1;
     address acc2; 
     address acc3;
-    uint value1 = 10000000;
-    uint value2 = 20000000;
-    uint value3 = 30000000;
-    string secret1 = "secret 1";
-    string secret2 = "secret 2";
-    string secret3 = "secret 3";
+    struct Bids
+    {
+        uint[] values;
+        bool[] fakes;
+        bytes32[] secrets;
+    }
+    Bids[3] bids; 
 
 
 
@@ -35,27 +36,92 @@ contract testSuite {
         acc1 = TestsAccounts.getAccount(1);
         acc2 = TestsAccounts.getAccount(2);
         acc3 = TestsAccounts.getAccount(3);
+        for (uint i=0; i<3; i++){
+            for (uint j=0; j<3; j++)
+            {
+                bids[i].values.push(i*j*2 ether);
+                bids[i].fakes.push(false);
+                bids[i].secrets.push("secret ");
+            }
+        }
     }
 
     function checkBenificiary() public {
-        //Assert.equal(TestsAccounts.getAccount(0),TestsAccounts.getAccount(0),"Benificiary Successfully set");
-        Assert.equal(blindAuction.beneficiary(),TestsAccounts.getAccount(0),"Benificiary Successfully set");
+        Assert.equal(blindAuction.beneficiary(),TestsAccounts.getAccount(0),"Benificiary Wrong");
+        require(blindAuction.beneficiary() == TestsAccounts.getAccount(0),"Benificiary Wrong");
     }
-
+    //sender acc1
     function checkBidAcc1() public payable {
-        // Use 'Assert' methods: https://remix-ide.readthedocs.io/en/latest/assert_library.html
         Assert.equal(msg.sender, acc1, "sender should be acc1");
-        bytes32 bid1 = keccak256(abi.encodePacked(value1, secret1));
-        blindAuction.bid{value: msg.value}(bid1);
+        require(msg.sender==acc1, "sender should be acc1");
+        uint accnum = 0;
+        for (uint i=0; i<3; i++){
+            bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[i], bids[accnum].fakes[i], bids[accnum].secrets[i]));
+            blindAuction.bid{value: msg.value/3}(bidi);
+        }
+    }
+    //sender acc2
+    function checkBidAcc2() public payable {
+        Assert.equal(msg.sender, acc2, "sender should be acc2");
+        require(msg.sender==acc2, "sender should be acc2");
+        uint accnum = 1;
+        for (uint i=0; i<3; i++){
+            bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[i], bids[accnum].fakes[i], bids[accnum].secrets[i]));
+            blindAuction.bid{value: msg.value/3}(bidi);
+        }
+    }
+    //sender acc3
+    function checkBidAcc3() public payable {
+        // Use 'Assert' methods: https://remix-ide.readthedocs.io/en/latest/assert_library.html
+        Assert.equal(msg.sender, acc3, "sender should be acc3");
+        require(msg.sender==acc3, "sender should be acc3");
+        uint accnum = 2;
+        for (uint i=0; i<3; i++){
+            bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[i], bids[accnum].fakes[i], bids[accnum].secrets[i]));
+            blindAuction.bid{value: msg.value/3}(bidi);
+        }
+    }
+    function checkRevealAcc1() public {
+        Assert.equal(msg.sender, acc1, "sender should be acc1");
+        require(msg.sender==acc1, "sender should be acc1");
+        Bids memory bids1 = bids[0];
+        blindAuction.reveal(bids1.values, bids1.fakes, bids1.secrets);
+    }
+    function checkRevealAcc2() public {
+        Assert.equal(msg.sender, acc2, "sender should be acc2");
+        require(msg.sender==acc2, "sender should be acc2");
+        Bids memory bids2 = bids[1];
+        blindAuction.reveal(bids2.values, bids2.fakes, bids2.secrets);
+    }
+    function checkRevealAcc3() public {
+        Assert.equal(msg.sender, acc3, "sender should be acc3");
+        require(msg.sender==acc3, "sender should be acc3");
+        Bids memory bids3 = bids[2];
+        blindAuction.reveal(bids3.values, bids3.fakes, bids3.secrets);
     }
 
-    function checkSuccess2() public pure returns (bool) {
-        // Use the return value (true or false) to test the contract
-        return true;
+    function checkWithdrawAcc1() public {
+        Assert.ok(blindAuction.ended(),"Auction not Ended");
+        Assert.equal(msg.sender, acc1, "sender should be acc1");
+        require(msg.sender==acc1, "sender should be acc1");
+        blindAuction.withdraw();
     }
-    
-    function checkFailure() public {
-        Assert.notEqual(uint(1), uint(1), "1 should not be equal to 1");
+
+    function checkWithdrawAcc2() public {
+        Assert.ok(blindAuction.ended(),"Auction not Ended");
+        Assert.equal(msg.sender, acc2, "sender should be acc2");
+        require(msg.sender==acc2, "sender should be acc2");
+        blindAuction.withdraw();
+    }
+    function checkWithdrawAcc3() public {
+        Assert.ok(blindAuction.ended(),"Auction not Ended");
+        Assert.equal(msg.sender, acc3, "sender should be acc2");
+        require(msg.sender==acc3, "sender should be acc3");
+        blindAuction.withdraw();
+    }
+    function checkAuctionEnd() public  {
+        Assert. equal(blindAuction.ended(),"Auction not Ended");
+        blindAuction.auctionEnd();
     }
 
     /// Custom Transaction Context: https://remix-ide.readthedocs.io/en/latest/unittesting.html#customization
