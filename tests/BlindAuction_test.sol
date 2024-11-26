@@ -121,6 +121,7 @@ contract testSuite {
     }
     function checkAuctionEnd() public  {
         Assert.equal(blindAuction.ended(),true, "Auction not Ended");
+        require(blindAuction.ended(), "Auction not Ended");
         blindAuction.auctionEnd();
     }
 
