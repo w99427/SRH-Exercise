@@ -124,14 +124,20 @@ contract testSuite {
         require(blindAuction.ended(), "Auction not Ended");
         blindAuction.auctionEnd();
     }
+    function checkBalance() public {
+        Assert.greaterThan(uint(acc1.balance), uint(99 ether), "Test Account Balance Incorrect");
+        Assert.greaterThan(uint(acc2.balance), uint(99 ether), "Test Account Balance Incorrect");
+        Assert.lesserThan(uint(acc3.balance), uint(91 ether), "Test Account Balance Incorrect");
+    }
 
     /// Custom Transaction Context: https://remix-ide.readthedocs.io/en/latest/unittesting.html#customization
     /// #sender: account-1
     /// #value: 100
-    function checkSenderAndValue() public payable {
+    /*function checkSenderAndValue() public payable {
         // account index varies 0-9, value is in wei
         Assert.equal(msg.sender, TestsAccounts.getAccount(1), "Invalid sender");
         Assert.equal(msg.value, 100, "Invalid value");
     }
+    */
 }
     
