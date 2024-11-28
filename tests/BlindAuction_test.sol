@@ -81,6 +81,7 @@ contract testSuite {
             blindAuction.bid{value: msg.value/3}(bidi);
         }
     }
+
     function checkRevealAcc1() public {
         Assert.equal(msg.sender, acc1, "sender should be acc1");
         require(msg.sender==acc1, "sender should be acc1");
