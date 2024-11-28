@@ -166,9 +166,10 @@ contract BlindAuction {
         for (uint i=0; i < bids[msg.sender].length; i++){
             if (bids[msg.sender][i].blindedBid == blindedBid)
             {
-                refund += bids[msg.sender][i].deposit;
+                refund = bids[msg.sender][i].deposit;
                 payable(msg.sender).transfer(refund);
                 delete bids[msg.sender][i];
+                break;
             }
         }
     }
