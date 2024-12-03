@@ -15,7 +15,7 @@ contract testMultiSig {
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeAll() public {
-        // <instantiate contract> with Test Account 0-4 as Owner and set min confirmation to 2
+        // <instantiate contract> with Test Account 0-3 as Owner and set min confirmation to 1
         owners.push(TestsAccounts.getAccount(0));
         owners.push(TestsAccounts.getAccount(1));
         owners.push(TestsAccounts.getAccount(2));
