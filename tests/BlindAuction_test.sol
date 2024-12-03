@@ -85,20 +85,17 @@ contract testSuite {
     function checkRevealAcc1() public {
         Assert.equal(msg.sender, acc1, "sender should be acc1");
         require(msg.sender==acc1, "sender should be acc1");
-        Bids memory bids1 = bids[0];
-        blindAuction.reveal(bids1.values, bids1.fakes, bids1.secrets);
+        blindAuction.reveal(bids[0].values, bids[0].fakes, bids[0].secrets);
     }
     function checkRevealAcc2() public {
         Assert.equal(msg.sender, acc2, "sender should be acc2");
         require(msg.sender==acc2, "sender should be acc2");
-        Bids memory bids2 = bids[1];
-        blindAuction.reveal(bids2.values, bids2.fakes, bids2.secrets);
+        blindAuction.reveal(bids[1].values, bids[1].fakes, bids[1].secrets);
     }
     function checkRevealAcc3() public {
         Assert.equal(msg.sender, acc3, "sender should be acc3");
         require(msg.sender==acc3, "sender should be acc3");
-        Bids memory bids3 = bids[2];
-        blindAuction.reveal(bids3.values, bids3.fakes, bids3.secrets);
+        blindAuction.reveal(bids[2].values, bids[2].fakes, bids[2].secrets);
     }
 
     function checkWithdrawAcc1() public {
