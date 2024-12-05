@@ -46,6 +46,7 @@ contract MultiSig {
 
     receive() external payable {
         //emit event of recieving
+        emit Deposit(msg.sender,msg.value,address(this).balance);
     }
 
     ///initilize Transaction, limited to owner, emit event, put it in pending list
@@ -80,10 +81,12 @@ contract MultiSig {
         return owners;
     }
 
+    ///get tx count
     function getTransactionCount() public view returns (uint256) {
         return transactions.length;
     }
 
+    ///get certain tx info
     function getTransaction(uint _txIndex)
     public
     view
