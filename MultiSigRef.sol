@@ -124,6 +124,7 @@ contract MultiSigWallet {
 
         transaction.executed = true;
 
+        require(transaction.value <= address(this).balance, "sufficient funds");
         (bool success,) =
             transaction.to.call{value: transaction.value}(transaction.data);
         require(success, "tx failed");
