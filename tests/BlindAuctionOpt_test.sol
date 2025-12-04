@@ -102,5 +102,47 @@ contract testSuite2 {
         bytes32 bidi = bids[accnum].blindBid[bidindex];
         blindAuction.withdrawOneBid(bidi);
     }
+
+    function checkBiddingEnd() public {
+        blindAuction.setBiddingEnd();
+        require(blindAuction.biddingEnded() == true, "set bidding end failed");
+    }
+
+
+
+    function checkRevealEnd() public {
+        blindAuction.setRevealEnd();
+        require(blindAuction.revealEnded() == true, "set reveal end failed");
+    }
+
+    function checkRevealAcc1() public {
+        Assert.equal(msg.sender, acc1, "sender should be acc1");
+        require(msg.sender==acc1, "sender should be acc1");
+        blindAuction.reveal(bids[0].values, bids[0].fakes, bids[0].secrets);
+    }
+
+    //TODOs for acc2 and acc3
+
+
+    function checkWithdrawAcc3() public {
+        Assert.ok(blindAuction.ended(),"Auction not Ended");
+        Assert.equal(msg.sender, acc3, "sender should be acc2");
+        require(msg.sender==acc3, "sender should be acc3");
+        blindAuction.withdraw();
+    }
+    //TODO for acc1 and acc2
+
+
+    function checkAuctionEnd() public  {
+        Assert.equal(blindAuction.ended(),true, "Auction not Ended");
+        require(blindAuction.ended(), "Auction not Ended");
+        blindAuction.auctionEnd();
+    }
+    function checkBalance() public {
+        Assert.greaterThan(uint(acc1.balance), uint(99 ether), "Test Account Balance Incorrect");
+        Assert.greaterThan(uint(acc2.balance), uint(99 ether), "Test Account Balance Incorrect");
+        Assert.lesserThan(uint(acc3.balance), uint(91 ether), "Test Account Balance Incorrect");
+    }
+
 }
     
