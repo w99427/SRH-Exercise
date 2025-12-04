@@ -161,17 +161,28 @@ contract BlindAuctionOpt {
     external
     onlyBefore(biddingEnded) 
     {
-        uint refund;
-        //FIXME: What happens if there are multiple identical blindBid in Bids[]?
-        for (uint i=0; i < bids[msg.sender].length; i++){
-            if (bids[msg.sender][i].blindedBid == blindedBid)
-            {
-                refund = bids[msg.sender][i].deposit;
-                payable(msg.sender).transfer(refund);
-                delete bids[msg.sender][i];
+        for (uint i = 0; i < bids[msg.sender].length; i++) {
+            if (bids[msg.sender][i].blindedBid == blindedBid) {
+                //TODO: refund deposit if we found matching bid
+                payable(msg.sender).transfer(bids[msg.sender][i].deposit);
+                //TODO: remove/delete the bid from mapping/bid array if we found matching bid
+                removeElementByIndex(msg.sender, i);
                 break;
             }
         }
+    }
+
+       function removeElementByIndex(address addr, uint _index) public returns (bool) {
+        if (_index >= bids[addr].length) {
+            return false;
+        }
+ 
+        for (uint i = _index; i < bids[addr].length - 1; i++) {
+            bids[addr][i] = bids[addr][i + 1];
+        }
+        bids[addr].pop();
+ 
+        return true;
     }
 
     /// Withdraw a bid that was overbid.
