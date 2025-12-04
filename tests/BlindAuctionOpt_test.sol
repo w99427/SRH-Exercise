@@ -33,17 +33,21 @@ contract testSuite2 {
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeAll() public {
         // <instantiate contract>
+        beneficiary = TestsAccounts.getAccount(0);
         blindAuction = new BlindAuctionOpt(payable(TestsAccounts.getAccount(0)));
         acc1 = TestsAccounts.getAccount(1);
         acc2 = TestsAccounts.getAccount(2);
         acc3 = TestsAccounts.getAccount(3);
-        for (uint i=0; i<3; i++){
-            for (uint j=0; j<3; j++)
+        
+        //3(Bidder) X 4(bids)
+        for (uint i =0; i <3; i++)
+        {
+            for (uint j = 0; j < 4; j++)
             {
-                bids[i].values.push(i*j*2 ether);
-                bids[i].fakes.push(false);
-                bids[i].secrets.push("secret ");
-                bids[i].blindBid.push(keccak256(abi.encodePacked(i*j*2 ether, false, "secret ")));
+                bids[i].values.push(((i+1)*(j+1))%3+1);
+                bids[i].fakes.push((i*j%2==0)); 
+                bids[i].secrets.push("secrect");
+                bids[i].blindBid.push(keccak256(abi.encodePacked(bids[i].values[j], bids[i].fakes[j], bids[i].secrets[j])));
             }
         }
     }
