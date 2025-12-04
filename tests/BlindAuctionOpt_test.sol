@@ -60,20 +60,46 @@ contract testSuite2 {
     function checkBidAcc1() public payable {
         Assert.equal(msg.sender, acc1, "sender should be acc1");
         require(msg.sender==acc1, "sender should be acc1");
+        require(msg.value > 10 ether, "need at least 10 ETH value");
         uint accnum = 0;
-        for (uint i=0; i<3; i++){
-            bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[i], bids[accnum].fakes[i], bids[accnum].secrets[i]));
-            blindAuction.bid{value: msg.value/3}(bidi);
+        for (uint i=0; i<4; i++){
+            //bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[i], bids[accnum].fakes[i], bids[accnum].secrets[i]));
+            blindAuction.bid{value: msg.value/4}(bids[accnum].blindBid[i]);
+        }
+    }
+
+        //sender acc1
+    function checkBidAcc2() public payable {
+        Assert.equal(msg.sender, acc2, "sender should be acc2");
+        require(msg.sender==acc2, "sender should be acc2");
+        require(msg.value > 10 ether, "need at least 10 ETH value");
+        uint accnum = 1;
+        for (uint i=0; i<4; i++){
+            //bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[i], bids[accnum].fakes[i], bids[accnum].secrets[i]));
+            blindAuction.bid{value: msg.value/4}(bids[accnum].blindBid[i]);
+        }
+    }
+
+        //sender acc1
+    function checkBidAcc3() public payable {
+        Assert.equal(msg.sender, acc3, "sender should be acc3");
+        require(msg.sender==acc3, "sender should be acc3");
+        require(msg.value > 10 ether, "need at least 10 ETH value");
+        uint accnum = 2;
+        for (uint i=0; i<4; i++){
+            //bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[i], bids[accnum].fakes[i], bids[accnum].secrets[i]));
+            blindAuction.bid{value: msg.value/4}(bids[accnum].blindBid[i]);
         }
     }
 
     //withdraw one bid from Acc1
-    function checkWithdrawOneBid() public {
+    function checkWithdrawOneBidAcc1() public payable{
         Assert.equal(msg.sender, acc1, "sender should be acc1");
         require(msg.sender==acc1, "sender should be acc1");
         uint accnum = 0;
         uint bidindex = 1;
-        bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[bidindex], bids[accnum].fakes[bidindex], bids[accnum].secrets[bidindex]));
+        //bytes32 bidi = keccak256(abi.encodePacked(bids[accnum].values[bidindex], bids[accnum].fakes[bidindex], bids[accnum].secrets[bidindex]));
+        bytes32 bidi = bids[accnum].blindBid[bidindex];
         blindAuction.withdrawOneBid(bidi);
     }
 }

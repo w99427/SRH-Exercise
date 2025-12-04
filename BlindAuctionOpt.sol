@@ -164,8 +164,15 @@ contract BlindAuctionOpt {
         for (uint i = 0; i < bids[msg.sender].length; i++) {
             if (bids[msg.sender][i].blindedBid == blindedBid) {
                 //TODO: refund deposit if we found matching bid
-                payable(msg.sender).transfer(bids[msg.sender][i].deposit);
+                //FIXME: something wrong with transfer
+                //payable(msg.sender).transfer(bids[msg.sender][i].deposit);
+                uint deposit = bids[msg.sender][i].deposit;
+                uint balance = address(this).balance;
+                require(deposit > 2 ether, "deposit");
+                require(balance > deposit, "Contract balance should be greater than the deposit");
+                payable(msg.sender).transfer(deposit);
                 //TODO: remove/delete the bid from mapping/bid array if we found matching bid
+                
                 removeElementByIndex(msg.sender, i);
                 break;
             }
