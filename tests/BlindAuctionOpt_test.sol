@@ -102,5 +102,27 @@ contract testSuite2 {
         bytes32 bidi = bids[accnum].blindBid[bidindex];
         blindAuction.withdrawOneBid(bidi);
     }
+    function checkRevealAcc3() public {
+        Assert.equal(msg.sender, acc3, "sender should be acc3");
+        require(msg.sender==acc3, "sender should be acc3");
+        blindAuction.reveal(bids[2].values, bids[2].fakes, bids[2].secrets);
+    }
+
+    function checkWithdrawAcc1() public {
+        Assert.ok(blindAuction.ended(),"Auction not Ended");
+        Assert.equal(msg.sender, acc1, "sender should be acc1");
+        require(msg.sender==acc1, "sender should be acc1");
+        blindAuction.withdraw();
+    }
+    function checkAuctionEnd() public  {
+        Assert.equal(blindAuction.ended(),true, "Auction not Ended");
+        require(blindAuction.ended(), "Auction not Ended");
+        blindAuction.auctionEnd();
+    }
+    function checkBalance() public {
+        Assert.greaterThan(uint(acc1.balance), uint(99 ether), "Test Account Balance Incorrect");
+        Assert.greaterThan(uint(acc2.balance), uint(99 ether), "Test Account Balance Incorrect");
+        Assert.lesserThan(uint(acc3.balance), uint(91 ether), "Test Account Balance Incorrect");
+    }
 }
     
