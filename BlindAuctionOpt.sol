@@ -23,6 +23,7 @@ contract BlindAuctionOpt {
     mapping(address => uint) pendingReturns;
 
     event AuctionEnded(address winner, uint highestBid);
+    event BidCompelete(address bidder, uint bidslength);
 
     // Errors that describe failures.
 
@@ -90,10 +91,11 @@ contract BlindAuctionOpt {
         payable
         onlyBefore(biddingEnded)
     {
-        bids[msg.sender].push(Bid({
+        bids[tx.origin].push(Bid({
             blindedBid: blindedBid,
             deposit: msg.value
         }));
+        emit BidCompelete(tx.origin, bids[tx.origin].length);
     }
 
     /// Reveal your blinded bids. You will get a refund for all
@@ -108,7 +110,7 @@ contract BlindAuctionOpt {
         onlyAfter(biddingEnded)
         onlyBefore(revealEnded)
     {
-        uint length = bids[msg.sender].length;
+        uint length = bids[tx.origin].length;
         require(values.length == length);
         require(fakes.length == length);
         require(secrets.length == length);
@@ -118,7 +120,7 @@ contract BlindAuctionOpt {
         uint highstvalue=0;
 
         for (uint i = 0; i < length; i++) {
-            Bid storage bidToCheck = bids[msg.sender][i];
+            Bid storage bidToCheck = bids[tx.origin][i];
             (uint value, bool fake, bytes32 secret) =
                     (values[i], fakes[i], secrets[i]);
             if (bidToCheck.blindedBid != keccak256(abi.encodePacked(value, fake, secret))) {
@@ -143,17 +145,17 @@ contract BlindAuctionOpt {
         }
 
         if (refund > highstvalue){
-            if(!placeBid(msg.sender, highstvalue)){
+            if(!placeBid(tx.origin, highstvalue)){
                 //not winning, return all diposit
-                payable(msg.sender).transfer(refund);
+                payable(tx.origin).transfer(refund);
             }
             else{
                 //winning just return (total diposit - highest bid value)
-                payable(msg.sender).transfer(refund-highstvalue);
+                payable(tx.origin).transfer(refund-highstvalue);
             }
         }else{
             //liar, highst bid bigger than total diposit
-            payable(msg.sender).transfer(refund);
+            payable(tx.origin).transfer(refund);
         }
     }
     ///withdraw only one bid
@@ -161,19 +163,19 @@ contract BlindAuctionOpt {
     external
     onlyBefore(biddingEnded) 
     {
-        for (uint i = 0; i < bids[msg.sender].length; i++) {
-            if (bids[msg.sender][i].blindedBid == blindedBid) {
+        for (uint i = 0; i < bids[tx.origin].length; i++) {
+            if (bids[tx.origin][i].blindedBid == blindedBid) {
                 //TODO: refund deposit if we found matching bid
                 //FIXME: something wrong with transfer
                 //payable(msg.sender).transfer(bids[msg.sender][i].deposit);
-                uint deposit = bids[msg.sender][i].deposit;
+                uint deposit = bids[tx.origin][i].deposit;
                 uint balance = address(this).balance;
                 require(deposit > 2 ether, "deposit");
                 require(balance > deposit, "Contract balance should be greater than the deposit");
-                payable(msg.sender).transfer(deposit);
+                payable(tx.origin).transfer(deposit);
                 //TODO: remove/delete the bid from mapping/bid array if we found matching bid
                 
-                removeElementByIndex(msg.sender, i);
+                removeElementByIndex(tx.origin, i);
                 break;
             }
         }
@@ -194,21 +196,21 @@ contract BlindAuctionOpt {
 
     /// Withdraw a bid that was overbid.
     function withdraw() external {
-        uint amount = pendingReturns[msg.sender];
+        uint amount = pendingReturns[tx.origin];
         if (amount > 0) {
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `transfer` returns (see the remark above about
             // conditions -> effects -> interaction).
-            pendingReturns[msg.sender] = 0;
+            pendingReturns[tx.origin] = 0;
 
-            payable(msg.sender).transfer(amount);
+            payable(tx.origin).transfer(amount);
         }
     }
 
     /// End the auction and send the highest bid
     /// to the beneficiary.
-    function auctionEnd()
+    function setAuctionEnd()
         external
         onlyAfter(revealEnded)
     {

@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: GPL-3.0
         
 pragma solidity >=0.4.22 <0.9.0;
@@ -109,6 +108,8 @@ contract testSuite2 {
         require(blindAuction.biddingEnded() == true, "set bidding end failed");
     }
 
+
+
     function checkRevealEnd() public {
         blindAuction.setRevealEnd();
         require(blindAuction.revealEnded() == true, "set reveal end failed");
@@ -121,37 +122,15 @@ contract testSuite2 {
     }
 
     //TODOs for acc2 and acc3
-    function checkRevealAcc2() public {
-        Assert.equal(msg.sender, acc2, "sender should be acc2");
-        require(msg.sender == acc2, "sender should be acc2");
-        blindAuction.reveal(bids[1].values, bids[1].fakes, bids[1].secrets);
-    }
 
-    function checkRevealAcc3() public {
-        Assert.equal(msg.sender, acc3, "sender should be acc3");
-        require(msg.sender == acc3, "sender should be acc3");
-        blindAuction.reveal(bids[2].values, bids[2].fakes, bids[2].secrets);
-    }
-    //TODO for acc1 and acc2
-    function checkWithdrawAcc1() public {
-        Assert.ok(blindAuction.ended(), "Auction not Ended");
-        Assert.equal(msg.sender, acc1, "sender should be acc1");
-        require(msg.sender == acc1, "sender should be acc1");
-        blindAuction.withdraw();
-    }
 
-    function checkWithdrawAcc2() public {
-        Assert.ok(blindAuction.ended(), "Auction not Ended");
-        Assert.equal(msg.sender, acc2, "sender should be acc2");
-        require(msg.sender == acc2, "sender should be acc2");
-        blindAuction.withdraw();
-    }
     function checkWithdrawAcc3() public {
         Assert.ok(blindAuction.ended(),"Auction not Ended");
         Assert.equal(msg.sender, acc3, "sender should be acc2");
         require(msg.sender==acc3, "sender should be acc3");
         blindAuction.withdraw();
     }
+    //TODO for acc1 and acc2
 
 
     function checkAuctionEnd() public  {
@@ -166,5 +145,4 @@ contract testSuite2 {
     }
 
 }
-
     
