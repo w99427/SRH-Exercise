@@ -44,7 +44,8 @@ contract testSuite2 {
         {
             for (uint j = 0; j < 4; j++)
             {
-                bids[i].values.push(((i+1)*(j+1))%3+1);
+                uint tmp = ((i+1)*(j+1))%3 + 1;
+                bids[i].values.push(tmp * 1 ether);
                 bids[i].fakes.push((i*j%2==0)); 
                 bids[i].secrets.push("secrect");
                 bids[i].blindBid.push(keccak256(abi.encodePacked(bids[i].values[j], bids[i].fakes[j], bids[i].secrets[j])));
@@ -108,8 +109,6 @@ contract testSuite2 {
         require(blindAuction.biddingEnded() == true, "set bidding end failed");
     }
 
-
-
     function checkRevealEnd() public {
         blindAuction.setRevealEnd();
         require(blindAuction.revealEnded() == true, "set reveal end failed");
@@ -122,21 +121,43 @@ contract testSuite2 {
     }
 
     //TODOs for acc2 and acc3
+    function checkRevealAcc2() public {
+        Assert.equal(msg.sender, acc2, "sender should be acc2");
+        require(msg.sender == acc2, "sender should be acc2");
+        blindAuction.reveal(bids[1].values, bids[1].fakes, bids[1].secrets);
+    }
 
+    function checkRevealAcc3() public {
+        Assert.equal(msg.sender, acc3, "sender should be acc3");
+        require(msg.sender == acc3, "sender should be acc3");
+        blindAuction.reveal(bids[2].values, bids[2].fakes, bids[2].secrets);
+    }
+    //TODO for acc1 and acc2
+    function checkWithdrawAcc1() public {
+        Assert.ok(blindAuction.ended(), "Auction not Ended");
+        Assert.equal(msg.sender, acc1, "sender should be acc1");
+        require(msg.sender == acc1, "sender should be acc1");
+        blindAuction.withdraw();
+    }
 
+    function checkWithdrawAcc2() public {
+        Assert.ok(blindAuction.ended(), "Auction not Ended");
+        Assert.equal(msg.sender, acc2, "sender should be acc2");
+        require(msg.sender == acc2, "sender should be acc2");
+        blindAuction.withdraw();
+    }
     function checkWithdrawAcc3() public {
         Assert.ok(blindAuction.ended(),"Auction not Ended");
-        Assert.equal(msg.sender, acc3, "sender should be acc2");
+        Assert.equal(msg.sender, acc3, "sender should be acc3");
         require(msg.sender==acc3, "sender should be acc3");
         blindAuction.withdraw();
     }
-    //TODO for acc1 and acc2
 
 
     function checkAuctionEnd() public  {
-        Assert.equal(blindAuction.ended(),true, "Auction not Ended");
+        blindAuction.setAuctionEnd();
+        Assert.equal(blindAuction.ended(), true, "Auction not Ended");
         require(blindAuction.ended(), "Auction not Ended");
-        blindAuction.auctionEnd();
     }
     function checkBalance() public {
         Assert.greaterThan(uint(acc1.balance), uint(99 ether), "Test Account Balance Incorrect");
@@ -145,4 +166,5 @@ contract testSuite2 {
     }
 
 }
+
     
